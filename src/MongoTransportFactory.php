@@ -45,7 +45,7 @@ class MongoTransportFactory implements TransportFactoryInterface
 
         $configuration = ['connection' => $components['host']]
             + $options
-            + $components['query']
+            + ($components['query'] ?? [])
             + self::DEFAULT_OPTIONS;
 
         try {

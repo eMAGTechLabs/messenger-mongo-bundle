@@ -11,11 +11,21 @@
     ],
     "require": {
         "php": "^7.3",
-        "doctrine/mongodb-odm-bundle": "3.*"
+        "doctrine/mongodb-odm-bundle": "3.*",
+        "symfony/messenger": "4.*"
+    },
+    "require-dev": {
+        "alcaeus/mongo-php-adapter": "^1.1",
+        "phpunit/phpunit": "^9.1"
     },
     "autoload": {
         "psr-4": {
             "Iosifch\\MessengerMongoBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Iosifch\\MessengerMongoBundle\\Tests\\": "tests/"
         }
     }
 }
