@@ -1,0 +1,21 @@
+{
+    "name": "iosifch/messenger-mongo-transport",
+    "description": "A Mongo transport for the Symfony Messenger component",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Iosif Chiriluta",
+            "email": "iosifpub@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7.3",
+        "doctrine/mongodb-odm-bundle": "3.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Iosifch\\MessengerMongoBundle\\": "src/"
+        }
+    }
+}
