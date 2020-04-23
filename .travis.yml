@@ -25,6 +25,7 @@ matrix:
     - php: nightly
 
 before_install:
+  - pecl install mongodb
   - phpenv config-rm xdebug.ini || echo "xdebug not available";
   - if [ "$SYMFONY_VERSION" != "" ]; then composer require --no-update symfony/framework-bundle "$SYMFONY_VERSION"; fi
 
