@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace EmagTechLabs\MessengerMongoBundle\Tests;
 
-use Doctrine\Common\EventManager;
 use Doctrine\MongoDB\Collection;
 use Doctrine\MongoDB\CursorInterface;
-use Doctrine\MongoDB\Database;
 use EmagTechLabs\MessengerMongoBundle\MongoTransport;
 use EmagTechLabs\MessengerMongoBundle\Tests\Fixtures\HelloMessage;
 use MongoDB\BSON\ObjectId;
-use MongoDB\BSON\UTCDateTime;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
