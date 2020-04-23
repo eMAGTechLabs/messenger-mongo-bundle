@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Iosifch\MessengerMongoBundle\DependencyInjection;
+namespace EmagTechLabs\MessengerMongoBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

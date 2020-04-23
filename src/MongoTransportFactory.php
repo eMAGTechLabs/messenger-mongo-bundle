@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Iosifch\MessengerMongoBundle;
+namespace EmagTechLabs\MessengerMongoBundle;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;

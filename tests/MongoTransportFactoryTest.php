@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Iosifch\MessengerMongoBundle\Tests;
+namespace EmagTechLabs\MessengerMongoBundle\Tests;
 
 use Doctrine\MongoDB\Collection;
 use Doctrine\MongoDB\Connection;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Iosifch\MessengerMongoBundle\MongoTransport;
-use Iosifch\MessengerMongoBundle\MongoTransportFactory;
+use EmagTechLabs\MessengerMongoBundle\MongoTransport;
+use EmagTechLabs\MessengerMongoBundle\MongoTransportFactory;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;

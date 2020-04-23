@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Iosifch\MessengerMongoBundle;
+namespace EmagTechLabs\MessengerMongoBundle;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
