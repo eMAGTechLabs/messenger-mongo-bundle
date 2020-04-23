@@ -1,12 +1,13 @@
 language: php
+before_script:
+  - pecl install mongodb
+  - echo "extension=mongodb.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
 
 env:
   global:
     - SYMFONY_VERSION="^4.3"
 
 php:
-  - 7.2
-  - 7.4
   - nightly
 
 cache:
