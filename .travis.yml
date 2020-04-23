@@ -1,0 +1,38 @@
+language: php
+
+env:
+  global:
+    - SYMFONY_VERSION="^4.3"
+
+php:
+  - 7.2
+  - 7.4
+  - nightly
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+matrix:
+  fast_finish: true
+  include:
+    - php: 7.2
+      env: SYMFONY_VERSION=^4.3
+    - php: 7.2
+      env: SYMFONY_VERSION=^5.0
+    - php: 7.4
+      env: SYMFONY_VERSION=^5.0
+
+  allow_failures:
+    - php: nightly
+
+before_install:
+  - phpenv config-rm xdebug.ini || echo "xdebug not available";
+  - if [ "$SYMFONY_VERSION" != "" ]; then composer require --no-update symfony/framework-bundle "$SYMFONY_VERSION"; fi
+  - if [ "$COMPOSER_FLAGS" != "" ]; then composer update --prefer-dist --no-interaction --no-scripts $COMPOSER_FLAGS; fi;
+
+install:
+  - COMPOSER_MEMORY_LIMIT=-1 travis_retry composer install --prefer-dist --no-interaction
+  
+script:
+  - vendor/bin/phpunit
