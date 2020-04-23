@@ -1,5 +1,5 @@
 {
-    "name": "emag-tech-labs/messenger-mongo-transport",
+    "name": "emag-tech-labs/messenger-mongo-bundle",
     "description": "A Mongo transport for the Symfony Messenger component",
     "type": "symfony-bundle",
     "license": "MIT",
@@ -16,7 +16,9 @@
         "doctrine/mongodb-odm-bundle": "3.*"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.1"
+        "phpunit/phpunit": "^9.1",
+        "symfony/serializer": "^5.0",
+        "symfony/property-access": "^5.0"
     },
     "autoload": {
         "psr-4": {
