@@ -131,6 +131,7 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
         $data = [
             '_id' => $objectId,
             'body' => $encodedMessage['body'],
+            'headers' => json_encode($encodedMessage['headers'] ?? []),
             'queue_name' => $this->options['queue'],
             'locked' => false,
             'created_at' => new UTCDateTime($now),
@@ -144,7 +145,7 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
 
     public function all(int $limit = null): iterable
     {
-        $documents = $this->collection->find();
+        $documents = $this->collection->find()->limit($limit);
 
         foreach ($documents as $document) {
             yield $this->createEnvelopeFromDocument($document);
@@ -170,6 +171,7 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
         $envelope = $this->serializer->decode(
             [
                 'body' => $document['body'],
+                'headers' => $document['headers']
             ]
         );
 
