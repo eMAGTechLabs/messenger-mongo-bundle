@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace EmagTechLabs\MessengerMongoBundle\Tests;
+namespace EmagTechLabs\MessengerMongoBundle\Tests\Unit;
 
 use Doctrine\MongoDB\Collection;
 use Doctrine\MongoDB\CursorInterface;
 use EmagTechLabs\MessengerMongoBundle\MongoTransport;
-use EmagTechLabs\MessengerMongoBundle\Tests\Fixtures\HelloMessage;
+use EmagTechLabs\MessengerMongoBundle\Tests\Unit\Fixtures\HelloMessage;
 use MongoDB\BSON\ObjectId;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
@@ -127,7 +127,7 @@ class MongoTransportTest extends TestCase
         $this->assertSame('{"text":"hello"}', $collection->documents[0]['body']);
         $this->assertEquals(
             [
-                'type' => 'EmagTechLabs\MessengerMongoBundle\Tests\Fixtures\HelloMessage',
+                'type' => HelloMessage::class,
                 'X-Message-Stamp-Symfony\Component\Messenger\Stamp\DelayStamp' => '[{"delay":4000}]',
                 'Content-Type' => 'application/json',
             ],

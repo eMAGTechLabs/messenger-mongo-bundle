@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EmagTechLabs\MessengerMongoBundle\Tests;
+namespace EmagTechLabs\MessengerMongoBundle\Tests\Unit;
 
 use Doctrine\MongoDB\Collection;
 use Doctrine\MongoDB\Connection;

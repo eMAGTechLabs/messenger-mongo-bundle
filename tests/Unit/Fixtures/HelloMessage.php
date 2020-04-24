@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EmagTechLabs\MessengerMongoBundle\Tests\Fixtures;
+namespace EmagTechLabs\MessengerMongoBundle\Tests\Unit\Fixtures;
 
 class HelloMessage
 {
