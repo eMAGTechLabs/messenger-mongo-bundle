@@ -21,7 +21,7 @@ framework:
                     queue: hello_queue # default in "default"
                     redeliver_timeout: 4800 # default is 3600
 ```
-The **dsn** parameter must be prefixed with **mongo://** followed by the name of the preferred Document Manager found in **config/packages/doctrine_mongodb.yaml** at **doctrine_mongodb.document_managers**.  
+The **dsn** parameter must be prefixed with **mongo://** followed by the name of the preferred Document Manager configured in **config/packages/doctrine_mongodb.yaml** at **doctrine_mongodb.document_managers**.  
           
 As an alternative, you could define the transport using the following shortcut:
 ```yaml
