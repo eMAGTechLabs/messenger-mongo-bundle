@@ -11,7 +11,7 @@ The recommended way to install the bundle is through Composer:
 ```
 $ composer require emag-tech-labs/messenger-mongo-bundle
 ```
-### Configuration
+### Configuration & usage
 ```yaml
 framework:
     messenger:
@@ -34,6 +34,24 @@ framework:
             hello_queue:
                 dsn: mongo://default?database=symfony&collection=hello_messages&queue=hello_queue&redeliver_timeout=4800
 ```
+The features described [here](https://symfony.com/doc/current/messenger.html#saving-retrying-failed-messages) can be used also, therefore the following commands are available in order to manually debug the failed messages:
+```bash
+# see all messages in the failure transport
+$ bin/console messenger:failed:show
+
+# see details about a specific failed message
+$ php bin/console messenger:failed:show 20 -vv
+
+# view and retry messages one-by-one
+$ php bin/console messenger:failed:retry -vv
+
+# retry specific messages
+$ php bin/console messenger:failed:retry 20 30 --force
+
+# remove a message without retrying it
+$ bin/console messenger:failed:remove
+``` 
+
 ### Submitting bugs and feature requests
 If you found a nasty bug or want to propose a new feature, you're welcome to create a pull request or open an issue [here](https://github.com/eMAGTechLabs/messenger-mongo-bundle/issues). 
 
