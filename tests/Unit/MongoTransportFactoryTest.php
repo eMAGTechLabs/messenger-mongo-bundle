@@ -60,8 +60,6 @@ class MongoTransportFactoryTest extends TestCase
         $this->expectExceptionMessage('The given Messenger DSN "mongo:///" is invalid');
 
         $container = $this->createMock(ContainerInterface::class);
-        $container->method('get')
-            ->willThrowException(new ServiceNotFoundException('doctrine_mongodb.odm.default_document_manager'));
 
         $factory = new MongoTransportFactory($container);
 
