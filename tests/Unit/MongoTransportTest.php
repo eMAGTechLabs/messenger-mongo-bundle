@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace EmagTechLabs\MessengerMongoBundle\Tests\Unit;
 
-use Doctrine\MongoDB\Collection;
-use Doctrine\MongoDB\CursorInterface;
 use EmagTechLabs\MessengerMongoBundle\MongoTransport;
 use EmagTechLabs\MessengerMongoBundle\Tests\Unit\Fixtures\HelloMessage;
 use MongoDB\BSON\ObjectId;
+use MongoDB\Collection;
+use MongoDB\Driver\CursorInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
@@ -27,7 +27,7 @@ class MongoTransportTest extends TestCase
         $document = $this->createDocument();
 
         $collection = $this->createMock(Collection::class);
-        $collection->method('findAndUpdate')
+        $collection->method('findOneAndUpdate')
             ->willReturn($document);
 
         $transport = new MongoTransport(
@@ -62,18 +62,13 @@ class MongoTransportTest extends TestCase
     {
         $serializer = $this->createSerializer();
 
-        $cursor = $this->createMock(CursorInterface::class);
-        $cursor->method('limit')
-            ->with(2)
+        $collection = $this->createMock(Collection::class);
+        $collection->method('find')
             ->willReturn([
                 $this->createDocument(),
                 $this->createDocument(),
                 $this->createDocument(),
             ]);
-
-        $collection = $this->createMock(Collection::class);
-        $collection->method('find')
-            ->willReturn($cursor);
 
         $transport = new MongoTransport($collection, $serializer, []);
         $collection = iterator_to_array($transport->all(2));
@@ -148,7 +143,7 @@ class MongoTransportTest extends TestCase
     /**
      * @test
      */
-    public function itShouldRemoveTheDocumentOnAckOrReject(): void
+    public function itShouldDeleteTheDocumentOnAckOrReject(): void
     {
         $documentId = new ObjectId();
         $envelope = (new Envelope(new HelloMessage('Hola!')))
@@ -156,7 +151,7 @@ class MongoTransportTest extends TestCase
 
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->exactly(2))
-            ->method('remove')
+            ->method('deleteOne')
             ->with(['_id' => $documentId]);
 
         $transport = new MongoTransport($collection, $this->createSerializer(), []);
@@ -164,15 +159,16 @@ class MongoTransportTest extends TestCase
         $transport->reject($envelope);
     }
 
-    private function createCollection(): Collection
+    private function createCollection(array $documents = []): Collection
     {
         return new class extends Collection {
             public $documents = [];
+
             public function __construct()
             {
             }
 
-            public function insert(array &$a, array $options = [])
+            public function insertOne($a, array $options = []): void
             {
                 $this->documents[] = $a;
             }
