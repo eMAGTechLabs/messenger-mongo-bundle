@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace EmagTechLabs\MessengerMongoBundle;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
+use MongoDB\Client;
 use Symfony\Component\Messenger\Exception\InvalidArgumentException;
 use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
 use Symfony\Component\Messenger\Transport\TransportFactoryInterface;
@@ -20,57 +18,53 @@ class MongoTransportFactory implements TransportFactoryInterface
         'redeliver_timeout' => 3600
     ];
 
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
-
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
-    }
+    private const DRIVER_OPTIONS_TYPE_MAP = [
+        'root' => 'array', 'document' => 'array', 'array' => 'array',
+    ];
 
     public function createTransport(
         string $dsn,
         array $options,
         SerializerInterface $serializer
     ): TransportInterface {
-        if (false === $components = parse_url($dsn)) {
-            throw new InvalidArgumentException(sprintf('The given Messenger DSN "%s" is invalid', $dsn));
+        $uriOptions = [];
+        if (isset($options['uriOptions'])) {
+            $uriOptions = $options['uriOptions'];
+            unset($options['uriOptions']);
         }
 
-        if (isset($components['query'])) {
-            parse_str($components['query'], $components['query']);
+        $driverOptions = [];
+        if (isset($options['driverOptions'])) {
+            $driverOptions = $options['driverOptions'];
+            unset($options['driverOptions']);
         }
 
-        $configuration = ['connection' => $components['host']]
-            + $options
-            + ($components['query'] ?? [])
-            + self::DEFAULT_OPTIONS;
-
-        try {
-            /** @var DocumentManager $documentManager */
-            $documentManager = $this->container->get(sprintf(
-                'doctrine_mongodb.odm.%s_document_manager',
-                $configuration['connection']
-            ));
-        } catch (ServiceNotFoundException $e) {
+        if (!is_array($uriOptions)) {
             throw new InvalidArgumentException(sprintf(
-                'The given Document Manager "%s" not found',
-                $configuration['connection']
+                'Option "uriOptions" has an invalid type. Expected array found %s',
+                gettype($uriOptions)
             ));
         }
 
-        $collection = $documentManager->getConnection()->selectCollection(
-            $configuration['database'],
-            $configuration['collection']
-        );
+        if (!is_array($driverOptions)) {
+            throw new InvalidArgumentException(sprintf(
+                'Option "driverOptions" has an invalid type. Expected array found %s',
+                gettype($driverOptions)
+            ));
+        }
+
+        $driverOptions['typeMap'] = self::DRIVER_OPTIONS_TYPE_MAP;
+
+        $configuration = $options + self::DEFAULT_OPTIONS;
+
+        $client = new Client($dsn, $uriOptions, $driverOptions);
+        $collection = $client->selectCollection($configuration['database'], $configuration['collection']);
 
         return new MongoTransport($collection, $serializer, $configuration);
     }
 
     public function supports(string $dsn, array $options): bool
     {
-        return 0 === strpos($dsn, 'mongo://');
+        return 0 === strpos($dsn, 'mongodb://');
     }
 }

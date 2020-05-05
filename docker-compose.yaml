@@ -6,4 +6,13 @@ services:
             dockerfile: ./docker/Dockerfile
         volumes:
             - ./:/var/www/html
+    mongo:
+        restart: unless-stopped
+        image: mongo:3.6
+        ports:
+            - 27017:27017
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=root
+            - MONGO_INITDB_ROOT_PASSWORD=rootpass
+
 

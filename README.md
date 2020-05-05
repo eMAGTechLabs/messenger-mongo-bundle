@@ -12,27 +12,20 @@ The recommended way to install the bundle is through Composer:
 $ composer require emag-tech-labs/messenger-mongo-bundle
 ```
 ### Configuration & usage
+Take a look [here](https://docs.mongodb.com/php-library/current/reference/method/MongoDBClient__construct/) if you need to find out how to configure the **driverOptions**, **uriOptions** and **dsn** options.
 ```yaml
 framework:
     messenger:
         transports:
             hello_queue:
-                dsn: mongo://default
+                dsn: mongodb://127.0.0.1:27017
                 options:
+                    uriOptions: []
+                    driverOptions: []
                     database: symfony # required
                     collection: hello_messages # default is "messenger_queue"
-                    queue: hello_queue # default in "default"
+                    queue: hello_queue # default is "default"
                     redeliver_timeout: 4800 # default is 3600
-```
-The **dsn** parameter must be prefixed with **mongo://** followed by the name of the preferred Document Manager configured in **config/packages/doctrine_mongodb.yaml** at **doctrine_mongodb.document_managers**.  
-          
-As an alternative, you could define the transport using the following shortcut:
-```yaml
-framework:
-    messenger:
-        transports:
-            hello_queue:
-                dsn: mongo://default?database=symfony&collection=hello_messages&queue=hello_queue&redeliver_timeout=4800
 ```
 The features described [here](https://symfony.com/doc/current/messenger.html#saving-retrying-failed-messages) can be used also, therefore the following commands are available in order to manually debug the failed messages:
 ```bash
@@ -51,7 +44,6 @@ $ php bin/console messenger:failed:retry 20 30 --force
 # remove a message without retrying it
 $ bin/console messenger:failed:remove
 ``` 
-
 ### Submitting bugs and feature requests
 If you found a nasty bug or want to propose a new feature, you're welcome to create a pull request or open an issue [here](https://github.com/eMAGTechLabs/messenger-mongo-bundle/issues). 
 

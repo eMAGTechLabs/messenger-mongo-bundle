@@ -4,7 +4,7 @@ WORKDIR /var/www/html
 
 RUN apk update \
   && apk upgrade \
-  && apk add --no-cache git zip make autoconf g++
+  && apk add --no-cache git zip make autoconf g++ openssl-dev
 
 RUN pecl -q install mongodb-1.7.4 xdebug \
   && docker-php-ext-enable mongodb

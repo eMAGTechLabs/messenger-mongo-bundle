@@ -4,16 +4,11 @@ declare(strict_types=1);
 
 namespace EmagTechLabs\MessengerMongoBundle\Tests\Unit;
 
-use Doctrine\MongoDB\Collection;
-use Doctrine\MongoDB\Connection;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use EmagTechLabs\MessengerMongoBundle\MongoTransport;
 use EmagTechLabs\MessengerMongoBundle\MongoTransportFactory;
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\Messenger\Exception\InvalidArgumentException;
 use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
+use PHPUnit\Framework\TestCase;
 
 class MongoTransportFactoryTest extends TestCase
 {
@@ -22,31 +17,26 @@ class MongoTransportFactoryTest extends TestCase
      */
     public function itShouldSupportOnlyMongoSchema(): void
     {
-        $factory = new MongoTransportFactory(
-            $this->createMock(ContainerInterface::class)
-        );
+        $factory = new MongoTransportFactory();
 
-        $this->assertTrue($factory->supports('mongo://default', []));
+        $this->assertTrue($factory->supports('mongodb://default', []));
         $this->assertFalse($factory->supports('doctrine://', []));
     }
 
     /**
      * @test
      */
-    public function itShouldThrowExceptionIfDocumentManagerNotFound(): void
+    public function itShouldFailIfUriOptionsHasInvalidType(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('The given Document Manager "default" not found');
+        $this->expectExceptionMessage('Option "uriOptions" has an invalid type. Expected array found boolean');
 
-        $container = $this->createMock(ContainerInterface::class);
-        $container->method('get')
-            ->willThrowException(new ServiceNotFoundException('doctrine_mongodb.odm.default_document_manager'));
-
-        $factory = new MongoTransportFactory($container);
-
+        $factory = new MongoTransportFactory();
         $factory->createTransport(
-            'mongo://default',
-            [],
+            'mongodb://127.0.0.1:27017',
+            [
+                'uriOptions' => false
+            ],
             $this->createMock(SerializerInterface::class)
         );
     }
@@ -54,64 +44,39 @@ class MongoTransportFactoryTest extends TestCase
     /**
      * @test
      */
-    public function itShouldThrowExceptionIfDSNIsInvalid(): void
+    public function itShouldFailIfDriverOptionsHasInvalidType(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('The given Messenger DSN "mongo:///" is invalid');
+        $this->expectExceptionMessage('Option "driverOptions" has an invalid type. Expected array found string');
 
-        $container = $this->createMock(ContainerInterface::class);
-
-        $factory = new MongoTransportFactory($container);
-
+        $factory = new MongoTransportFactory();
         $factory->createTransport(
-            'mongo:///',
-            [],
+            'mongodb://127.0.0.1:27017',
+            [
+                'driverOptions' => 'invalid'
+            ],
             $this->createMock(SerializerInterface::class)
         );
     }
 
     /**
-     * @test
+     * @ttest
      */
     public function itShouldCreateTransport(): void
     {
-        $collection = $this->createMock(Collection::class);
-
-        $connection = $this->createMock(Connection::class);
-        $connection->method('selectCollection')
-            ->willReturn($collection);
-
-        $documentManager = $this->createMock(DocumentManager::class);
-        $documentManager->method('getConnection')
-            ->willReturn($connection);
-
-        $container = $this->createMock(ContainerInterface::class);
-        $container->method('get')
-            ->willReturn($documentManager);
-
-        $serializer = $this->createMock(SerializerInterface::class);
-
-        $factory = new MongoTransportFactory($container);
+        $factory = new MongoTransportFactory();
         $transport = $factory->createTransport(
-            'mongo://default?database=symfony&collection=failed_messages',
+            'mongodb://120.0.0.1:27017',
             [
-                'redeliver_timeout' => 1000
+                'database' => 'symfony',
+                'redeliver_timeout' => 1000,
+                'collection' => 'failed_messages',
             ],
-            $serializer
+            $this->createMock(SerializerInterface::class)
         );
 
-        $this->assertEquals(
-            new MongoTransport(
-                $collection,
-                $serializer,
-                [
-                    'connection' => 'default',
-                    'collection' => 'failed_messages',
-                    'queue' => 'default',
-                    'redeliver_timeout' => 1000,
-                    'database' => 'symfony',
-                ]
-            ),
+        $this->assertInstanceOf(
+            MongoTransport::class,
             $transport
         );
     }

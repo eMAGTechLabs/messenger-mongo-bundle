@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace EmagTechLabs\MessengerMongoBundle;
 
 use DateTime;
-use Doctrine\MongoDB\Collection;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
+use MongoDB\Collection;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Exception\LogicException;
 use Symfony\Component\Messenger\Exception\MessageDecodingFailedException;
@@ -17,11 +17,10 @@ use Symfony\Component\Messenger\Transport\Receiver\ListableReceiverInterface;
 use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
 use Symfony\Component\Messenger\Transport\TransportInterface;
 
+use function is_array;
+
 final class MongoTransport implements TransportInterface, ListableReceiverInterface
 {
-    /**
-     * @var Collection
-     */
     private $collection;
     /**
      * @var SerializerInterface
@@ -34,9 +33,9 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
 
     public function __construct(Collection $collection, SerializerInterface $serializer, array $options = [])
     {
-        $this->collection = $collection;
         $this->serializer = $serializer;
         $this->options = $options;
+        $this->collection = $collection;
     }
 
     public function get(): iterable
@@ -47,7 +46,7 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
             $this->options['redeliver_timeout']
         ));
 
-        $document = $this->collection->findAndUpdate(
+        $document = $this->collection->findOneAndUpdate(
             [
                 'locked' => false,
                 '$or' => [
@@ -75,10 +74,11 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
                 'sort' => [
                     'available_at' => 1,
                 ],
+                'writeConcern' => ['w' => 'majority']
             ]
         );
 
-        if (!\is_array($document)) {
+        if (!is_array($document)) {
             return [];
         }
 
@@ -90,13 +90,14 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
      */
     private function removeMessage(Envelope $envelope): void
     {
+        /** @var TransportMessageIdStamp $transportMessageIdStamp */
         $transportMessageIdStamp = $envelope->last(TransportMessageIdStamp::class);
 
         if (!$transportMessageIdStamp instanceof TransportMessageIdStamp) {
             throw new LogicException(sprintf('No "%s" found on the Envelope.', TransportMessageIdStamp::class));
         }
 
-        $this->collection->remove([
+        $this->collection->deleteOne([
             '_id' => $transportMessageIdStamp->getId(),
         ]);
     }
@@ -138,14 +139,14 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
             'available_at' => new UTCDateTime($availableAt),
         ];
 
-        $this->collection->insert($data);
+        $this->collection->insertOne($data);
 
         return $envelope->with(new TransportMessageIdStamp($objectId));
     }
 
     public function all(int $limit = null): iterable
     {
-        $documents = $this->collection->find()->limit($limit);
+        $documents = $this->collection->find([], ['limit' => $limit]);
 
         foreach ($documents as $document) {
             yield $this->createEnvelopeFromDocument($document);
