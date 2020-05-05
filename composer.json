@@ -11,7 +11,6 @@
     ],
     "require": {
         "php": "^7.3",
-        "ext-mongodb": "^1.5",
         "ext-json": "*",
         "symfony/messenger": "^4.0 || ^5.0",
         "mongodb/mongodb": "^1.5"
