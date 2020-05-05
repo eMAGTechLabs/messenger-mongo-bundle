@@ -53,5 +53,5 @@ $ bin/console messenger:failed:remove
 ``` 
 
 ### Submitting bugs and feature requests
-If you found a nasty bug or want to propose a new feature, you're welcome to create a pull request or open an issue [here](https://github.com/eMAGTechLabs/messenger-mongo-bundle/issues). 
+If you found a nasty bug or want to propose a new feature, you're welcome to open an issue or create a pull request [here](https://github.com/eMAGTechLabs/messenger-mongo-bundle/issues). 
 
