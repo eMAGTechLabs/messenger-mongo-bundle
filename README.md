@@ -1,4 +1,5 @@
 # Messenger Mongo Bundle
+![Packagist Version](https://img.shields.io/packagist/v/emag-tech-labs/messenger-mongo-bundle)
 [![Build Status](https://travis-ci.org/eMAGTechLabs/messenger-mongo-bundle.svg?branch=master)](https://travis-ci.org/eMAGTechLabs/messenger-mongo-bundle)
 [![codecov](https://codecov.io/gh/eMAGTechLabs/messenger-mongo-bundle/branch/master/graph/badge.svg)](https://codecov.io/gh/eMAGTechLabs/messenger-mongo-bundle)
     
