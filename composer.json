@@ -6,7 +6,14 @@
     "authors": [
         {
             "name": "Iosif Chiriluta",
-            "email": "iosifpub@gmail.com"
+            "email": "iosifpub@gmail.com",
+            "role": "Developer"
+        },
+        {
+            "name": "eMAGTechLabs",
+            "email": "techlabs@emag.ro",
+            "homepage": "http://techlabs.emag.ro",
+            "role": "Maintainer"
         }
     ],
     "require": {
