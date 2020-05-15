@@ -48,7 +48,6 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
 
         $document = $this->collection->findOneAndUpdate(
             [
-                'locked' => false,
                 '$or' => [
                     [
                         'delivered_at' => null,
@@ -66,7 +65,6 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
             ],
             [
                 '$set' => [
-                    'locked' => true,
                     'delivered_at' => new UTCDateTime($now),
                 ],
             ],
@@ -134,7 +132,6 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
             'body' => $encodedMessage['body'],
             'headers' => json_encode($encodedMessage['headers'] ?? []),
             'queue_name' => $this->options['queue'],
-            'locked' => false,
             'created_at' => new UTCDateTime($now),
             'available_at' => new UTCDateTime($availableAt),
         ];
