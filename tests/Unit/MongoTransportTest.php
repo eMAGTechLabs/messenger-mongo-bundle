@@ -59,6 +59,55 @@ class MongoTransportTest extends TestCase
     /**
      * @test
      */
+    public function itShouldNothingIfConsumerIdNotMatching(): void
+    {
+        $serializer = $this->createSerializer();
+        $document = $this->createDocument();
+
+        $collection = $this->createMock(Collection::class);
+        $collection->method('findOneAndUpdate')
+            ->willReturn($document);
+
+        $transport = new MongoTransport(
+            $collection,
+            $serializer,
+            [
+                'redeliver_timeout' => 3600,
+                'queue' => 'default'
+            ],
+            'consumer_id2'
+        );
+
+        $this->assertCount(0, $transport->get());
+    }
+
+    /**
+     * @test
+     */
+    public function itShouldNothingIfDocumentIsNotArray(): void
+    {
+        $serializer = $this->createSerializer();
+
+        $collection = $this->createMock(Collection::class);
+        $collection->method('findOneAndUpdate')
+            ->willReturn(null);
+
+        $transport = new MongoTransport(
+            $collection,
+            $serializer,
+            [
+                'redeliver_timeout' => 3600,
+                'queue' => 'default'
+            ],
+            'consumer_id2'
+        );
+
+        $this->assertCount(0, $transport->get());
+    }
+
+    /**
+     * @test
+     */
     public function itShouldListAllMessages(): void
     {
         $serializer = $this->createSerializer();
@@ -99,6 +148,24 @@ class MongoTransportTest extends TestCase
             new HelloMessage('Hello'),
             $envelope->getMessage()
         );
+    }
+
+    /**
+     * @test
+     */
+    public function itShouldReturnNothingIfIdCouldNotBeFound(): void
+    {
+        $serializer = $this->createSerializer();
+        $document = $this->createDocument();
+
+        $collection = $this->createMock(Collection::class);
+        $collection->method('findOne')
+            ->willReturn(null);
+
+        $transport = new MongoTransport($collection, $serializer, [], 'consumer_id');
+        $this->assertNull($transport->find(
+            (string)(new ObjectId())
+        ));
     }
 
     /**

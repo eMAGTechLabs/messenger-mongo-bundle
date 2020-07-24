@@ -60,7 +60,7 @@ class MongoTransportFactoryTest extends TestCase
     }
 
     /**
-     * @ttest
+     * @test
      */
     public function itShouldCreateTransport(): void
     {
