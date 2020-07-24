@@ -60,7 +60,12 @@ class MongoTransportFactory implements TransportFactoryInterface
         $client = new Client($dsn, $uriOptions, $driverOptions);
         $collection = $client->selectCollection($configuration['database'], $configuration['collection']);
 
-        return new MongoTransport($collection, $serializer, $configuration);
+        return new MongoTransport(
+            $collection,
+            $serializer,
+            $configuration,
+            uniqid('consumer_', true)
+        );
     }
 
     public function supports(string $dsn, array $options): bool

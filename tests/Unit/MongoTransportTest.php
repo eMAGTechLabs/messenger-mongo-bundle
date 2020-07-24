@@ -36,7 +36,8 @@ class MongoTransportTest extends TestCase
             [
                 'redeliver_timeout' => 3600,
                 'queue' => 'default'
-            ]
+            ],
+            'consumer_id'
         );
 
         /** @var Envelope $envelope */
@@ -70,7 +71,7 @@ class MongoTransportTest extends TestCase
                 $this->createDocument(),
             ]);
 
-        $transport = new MongoTransport($collection, $serializer, []);
+        $transport = new MongoTransport($collection, $serializer, [], 'consumer_id');
         $collection = iterator_to_array($transport->all(2));
 
         $this->assertEquals(
@@ -91,7 +92,7 @@ class MongoTransportTest extends TestCase
         $collection->method('findOne')
             ->willReturn($document);
 
-        $transport = new MongoTransport($collection, $serializer, []);
+        $transport = new MongoTransport($collection, $serializer, [], 'consumer_id');
         $envelope = $transport->find((string)(new ObjectId()));
 
         $this->assertEquals(
@@ -112,7 +113,8 @@ class MongoTransportTest extends TestCase
             $this->createSerializer(),
             [
                 'queue' => 'default'
-            ]
+            ],
+            'consumer_id'
         );
         $envelope = $transport->send(
             (new Envelope(new HelloMessage('hello')))
@@ -129,7 +131,6 @@ class MongoTransportTest extends TestCase
             json_decode($collection->documents[0]['headers'], true)
         );
         $this->assertSame('default', $collection->documents[0]['queue_name']);
-        $this->assertFalse($collection->documents[0]['locked']);
         $this->assertInstanceOf(TransportMessageIdStamp::class, $envelope->last(TransportMessageIdStamp::class));
         $this->assertSame(
             4,
@@ -154,7 +155,7 @@ class MongoTransportTest extends TestCase
             ->method('deleteOne')
             ->with(['_id' => $documentId]);
 
-        $transport = new MongoTransport($collection, $this->createSerializer(), []);
+        $transport = new MongoTransport($collection, $this->createSerializer(), [], 'consumer_id');
         $transport->ack($envelope);
         $transport->reject($envelope);
     }
@@ -183,6 +184,7 @@ class MongoTransportTest extends TestCase
             'headers' => [
                 'type' => HelloMessage::class
             ],
+            'consumer_id' => 'consumer_id',
         ];
     }
 
