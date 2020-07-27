@@ -61,10 +61,7 @@ class MongoTransportFactory implements TransportFactoryInterface
         $collection = $client->selectCollection($configuration['database'], $configuration['collection']);
 
         return new MongoTransport(
-            $collection,
-            $serializer,
-            $configuration,
-            uniqid('consumer_', true)
+            $collection, $serializer, uniqid('consumer_', true), $configuration
         );
     }
 

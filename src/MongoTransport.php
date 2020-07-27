@@ -40,8 +40,12 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
      */
     private $consumerId;
 
-    public function __construct(Collection $collection, SerializerInterface $serializer, array $options = [], string $consumerId)
-    {
+    public function __construct(
+        Collection $collection,
+        SerializerInterface $serializer,
+        string $consumerId,
+        array $options = []
+    ) {
         $this->serializer = $serializer;
         $this->options = $options;
         $this->collection = $collection;
