@@ -8,6 +8,8 @@ use DateTime;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 use MongoDB\Collection;
+use MongoDB\Driver\WriteConcern;
+use MongoDB\Operation\FindOneAndUpdate;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Exception\LogicException;
 use Symfony\Component\Messenger\Exception\MessageDecodingFailedException;
@@ -21,6 +23,9 @@ use function is_array;
 
 final class MongoTransport implements TransportInterface, ListableReceiverInterface
 {
+    /**
+     * @var Collection
+     */
     private $collection;
     /**
      * @var SerializerInterface
@@ -30,12 +35,21 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
      * @var array
      */
     private $options;
+    /**
+     * @var string
+     */
+    private $consumerId;
 
-    public function __construct(Collection $collection, SerializerInterface $serializer, array $options = [])
-    {
+    public function __construct(
+        Collection $collection,
+        SerializerInterface $serializer,
+        string $consumerId,
+        array $options = []
+    ) {
         $this->serializer = $serializer;
         $this->options = $options;
         $this->collection = $collection;
+        $this->consumerId = $consumerId;
     }
 
     public function get(): iterable
@@ -48,7 +62,6 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
 
         $document = $this->collection->findOneAndUpdate(
             [
-                'locked' => false,
                 '$or' => [
                     [
                         'delivered_at' => null,
@@ -66,7 +79,7 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
             ],
             [
                 '$set' => [
-                    'locked' => true,
+                    'consumer_id' => $this->consumerId,
                     'delivered_at' => new UTCDateTime($now),
                 ],
             ],
@@ -74,11 +87,16 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
                 'sort' => [
                     'available_at' => 1,
                 ],
-                'writeConcern' => ['w' => 'majority']
+                'writeConcern' => new WriteConcern(WriteConcern::MAJORITY),
+                'returnDocument' => FindOneAndUpdate::RETURN_DOCUMENT_AFTER
             ]
         );
 
         if (!is_array($document)) {
+            return [];
+        }
+
+        if ($document['consumer_id'] !== $this->consumerId) {
             return [];
         }
 
@@ -134,7 +152,6 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
             'body' => $encodedMessage['body'],
             'headers' => json_encode($encodedMessage['headers'] ?? []),
             'queue_name' => $this->options['queue'],
-            'locked' => false,
             'created_at' => new UTCDateTime($now),
             'available_at' => new UTCDateTime($availableAt),
         ];
