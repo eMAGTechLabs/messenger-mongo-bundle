@@ -1,3 +1,6 @@
 vendor/
 composer.lock
 .idea/
+clover.xml
+.phpunit.result.cache
+infection.log

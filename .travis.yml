@@ -19,7 +19,14 @@ before_install:
 
 script:
     - ./vendor/bin/phpunit --coverage-clover coverage.xml
-    - ./vendor/bin/phpstan analyse
 
 after_success:
     - bash <(curl -s https://codecov.io/bash) -B $TRAVIS_BRANCH
+
+jobs:
+    include:
+    -   stage: phpstan
+        script: ./vendor/bin/phpstan analyse
+    -   stage: infection
+        script: ./vendor/bin/infection --no-progress
+
