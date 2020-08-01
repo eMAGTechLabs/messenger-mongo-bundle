@@ -27,6 +27,8 @@ jobs:
     include:
     -   stage: phpstan
         script: ./vendor/bin/phpstan analyse
+        after_success: false
     -   stage: infection
         script: ./vendor/bin/infection --no-progress
+        after_success: false
 
