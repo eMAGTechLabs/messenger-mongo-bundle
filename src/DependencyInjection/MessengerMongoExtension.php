@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace EmagTechLabs\MessengerMongoBundle\DependencyInjection;
 
-use Symfony\Component\Config\FileLocator;
+use EmagTechLabs\MessengerMongoBundle\MongoTransportFactory;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 class MessengerMongoExtension extends Extension
@@ -14,12 +14,11 @@ class MessengerMongoExtension extends Extension
     /**
      * @inheritDoc
      */
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load('services.xml');
+        $transportDefinition = new Definition(MongoTransportFactory::class);
+        $transportDefinition->addTag('messenger.transport_factory');
 
-        $container->getDefinition('messenger.transport.mongo.factory')
-            ->addTag('messenger.transport_factory');
+        $container->setDefinition(MongoTransportFactory::class, $transportDefinition);
     }
 }
