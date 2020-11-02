@@ -1,0 +1,18 @@
+name: CI
+on: [push]
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                php-version: ['7.2', '7.3', '7.4']
+        name: PHP ${{ matrix.php-version }}
+        steps:
+            -   uses: actions/checkout@v1
+            -   name: Install PHP
+                uses: shivammathur/setup-php@master
+                with:
+                    php-version: ${{ matrix.php-version }}
+            -   name: PHP version
+                run: php -v
