@@ -6,15 +6,19 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php-version: ['7.2', '7.3', '7.4']
+                php-version: ['7.2']
         name: PHP ${{ matrix.php-version }}
         steps:
             -   uses: actions/checkout@v1
             -   name: Install PHP
                 uses: shivammathur/setup-php@v2
                 with:
+                    coverage: 'none'
                     php-version: ${{ matrix.php-version }}
                     tools: pecl, composer:v1
                     extensions: mongodb-1.6.1
-            -   name: PHP version
-                run: php -v
+            -   name: Composer install
+                run: 'composer install --no-interaction --no-progress --no-suggest'
+            -   name: PhpUnit
+                run: ./vendor/bin/phpunit
+
