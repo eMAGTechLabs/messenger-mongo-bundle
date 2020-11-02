@@ -11,8 +11,10 @@ jobs:
         steps:
             -   uses: actions/checkout@v1
             -   name: Install PHP
-                uses: shivammathur/setup-php@master
+                uses: shivammathur/setup-php@v2
                 with:
                     php-version: ${{ matrix.php-version }}
+                    tools: pecl, composer:v1
+                    extensions: mongodb-1.6.1
             -   name: PHP version
                 run: php -v
