@@ -22,7 +22,7 @@ jobs:
             -   name: PHPUnit
                 run: ./vendor/bin/phpunit --coverage-clover coverage.xml
             -   name: PHPStan
-                run: ./vendor/bin/phpstan analyse
+                run: ./vendor/bin/phpstan analyse --no-progress --no-interaction
             -   name: Codecov
                 uses: codecov/codecov-action@v1
                 with:
