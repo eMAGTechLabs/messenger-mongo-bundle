@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EmagTechLabs\MessengerMongoBundle\Tests\Integration\DependencyInjection;
 
 use EmagTechLabs\MessengerMongoBundle\DependencyInjection\MessengerMongoExtension;
+use EmagTechLabs\MessengerMongoBundle\MongoTransportFactory;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -19,11 +20,11 @@ class MessengerMongoExtensionTest extends TestCase
         $containerBuilder = self::createContainerBuilder();
 
         $this->assertTrue(
-            $containerBuilder->hasDefinition('messenger.transport.mongo.factory')
+            $containerBuilder->hasDefinition(MongoTransportFactory::class)
         );
 
         $this->assertArrayHasKey(
-            'messenger.transport.mongo.factory',
+            MongoTransportFactory::class,
             $containerBuilder->findTaggedServiceIds('messenger.transport_factory')
         );
     }
@@ -36,7 +37,7 @@ class MessengerMongoExtensionTest extends TestCase
         $containerBuilder->addCompilerPass(new class implements CompilerPassInterface {
             public function process(ContainerBuilder $container): void
             {
-                $container->findDefinition('messenger.transport.mongo.factory')
+                $container->findDefinition(MongoTransportFactory::class)
                     ->setPublic(true);
             }
         });
