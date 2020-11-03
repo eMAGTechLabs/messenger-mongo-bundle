@@ -6,7 +6,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php-version: ['7.2']
+                php-version: ['7.2', '7.3', '7.4']
         name: PHP ${{ matrix.php-version }}
         steps:
             -   uses: actions/checkout@v2
@@ -24,7 +24,7 @@ jobs:
             -   name: PHPStan
                 run: ./vendor/bin/phpstan analyse --no-progress --no-interaction
             -   name: Infection
-                run: ./vendor/bin/infection --no-progress
+                run: ./vendor/bin/infection --no-progress --logger-github
             -   name: Codecov
                 uses: codecov/codecov-action@v1
                 with:
