@@ -2,7 +2,7 @@
 [![Packagist Version](https://img.shields.io/packagist/v/emag-tech-labs/messenger-mongo-bundle)](https://packagist.org/packages/emag-tech-labs/messenger-mongo-bundle)
 [![GA build](https://github.com/eMAGTechLabs/messenger-mongo-bundle/workflows/CI/badge.svg?branch=master)](https://github.com/eMAGTechLabs/messenger-mongo-bundle/actions?query=workflow%3ACI)
 [![codecov](https://codecov.io/gh/eMAGTechLabs/messenger-mongo-bundle/branch/master/graph/badge.svg)](https://codecov.io/gh/eMAGTechLabs/messenger-mongo-bundle)
-    
+[![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FeMAGTechLabs%2Fmessenger-mongo-bundle%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/eMAGTechLabs/messenger-mongo-bundle/master)    
 This bundle offers a new type of transport for the Symfony Messenger component. While MongoDB is not the best tool to be used as a queue, sometimes it's more convenient to use the tools that your application already uses. For example, if your application already uses MongoDB and you want a persistent storage for the failed messages, I think it's quite handy to use MongoDB as a storage.  
 
 > At this moment the bundle is still not ready for production, but it will be very soon!
