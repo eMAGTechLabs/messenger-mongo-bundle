@@ -7,7 +7,7 @@
     "logs": {
         "text": "infection.log",
         "badge": {
-            "branch": "ga"
+            "branch": "master"
         }
     },
     "mutators": {
