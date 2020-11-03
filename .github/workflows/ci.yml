@@ -1,12 +1,12 @@
 name: CI
-on: [push]
+on: [push, pull_request]
 jobs:
     build:
         runs-on: ubuntu-latest
         strategy:
             fail-fast: false
             matrix:
-                php-version: ['7.2']
+                php-version: ['7.2', '7.3', '7.4']
         name: PHP ${{ matrix.php-version }}
         steps:
             -   uses: actions/checkout@v2
@@ -18,7 +18,7 @@ jobs:
                     tools: pecl, composer:v1
                     extensions: mongodb-1.6.1
             -   name: Composer install
-                run: 'composer install --no-interaction --no-progress --no-suggest'
+                run: composer install --no-interaction --no-progress --no-suggest
             -   name: PHPUnit
                 run: ./vendor/bin/phpunit --coverage-clover coverage.xml
             -   name: PHPStan
