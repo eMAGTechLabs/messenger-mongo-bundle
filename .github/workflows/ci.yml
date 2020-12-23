@@ -24,9 +24,9 @@ jobs:
             -   name: PHPStan
                 run: ./vendor/bin/phpstan analyse --no-progress --no-interaction
             -   name: Infection
-                run: ./vendor/bin/infection --no-progress
                 env:
                     INFECTION_BADGE_API_KEY: ${{ secrets.INFECTION_BADGE_API_KEY }}
+                run: ./vendor/bin/infection --no-progress
             -   name: Codecov
                 uses: codecov/codecov-action@v1
                 with:
