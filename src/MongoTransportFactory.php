@@ -67,6 +67,6 @@ class MongoTransportFactory implements TransportFactoryInterface
 
     public function supports(string $dsn, array $options): bool
     {
-        return 0 === strpos($dsn, 'mongodb://');
+        return (0 === strpos($dsn, 'mongodb://') || 0 === strpos($dsn, 'mongodb+srv://'));
     }
 }
