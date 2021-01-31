@@ -20,6 +20,7 @@ class MongoTransportFactoryTest extends TestCase
         $factory = new MongoTransportFactory();
 
         $this->assertTrue($factory->supports('mongodb://default', []));
+        $this->assertTrue($factory->supports('mongodb+srv://default', []));
         $this->assertFalse($factory->supports('doctrine://', []));
     }
 
