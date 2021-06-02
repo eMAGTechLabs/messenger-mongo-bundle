@@ -13,10 +13,10 @@ jobs:
             -   name: Install PHP
                 uses: shivammathur/setup-php@v2
                 with:
-                    coverage: pcov
-                    php-version: ${{ matrix.php-version }}
-                    tools: pecl, composer:v1
-                    extensions: mongodb-1.8.1
+                    coverage: "pcov"
+                    php-version: "${{ matrix.php-version }}"
+                    tools: "pecl, composer:v1"
+                    extensions: "mongodb-1.8.1"
             -   name: Composer install
                 run: composer install --no-interaction --no-progress --no-suggest
             -   name: PHPUnit
