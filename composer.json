@@ -43,7 +43,7 @@
     },
     "config": {
         "platform": {
-            "ext-mongodb": "1.9"
+            "ext-mongodb": "1.8.1"
         }
     }
 }
