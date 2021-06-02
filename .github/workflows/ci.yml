@@ -16,7 +16,7 @@ jobs:
                     coverage: pcov
                     php-version: ${{ matrix.php-version }}
                     tools: pecl, composer:v1
-                    extensions: mongodb-1.6.1
+                    extensions: mongodb-1.8.1
             -   name: Composer install
                 run: composer install --no-interaction --no-progress --no-suggest
             -   name: PHPUnit
