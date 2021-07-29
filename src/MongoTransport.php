@@ -23,22 +23,10 @@ use function is_array;
 
 final class MongoTransport implements TransportInterface, ListableReceiverInterface
 {
-    /**
-     * @var Collection
-     */
-    private $collection;
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-    /**
-     * @var array
-     */
-    private $options;
-    /**
-     * @var string
-     */
-    private $consumerId;
+    private Collection $collection;
+    private SerializerInterface $serializer;
+    private array $options;
+    private string $consumerId;
 
     public function __construct(
         Collection $collection,
