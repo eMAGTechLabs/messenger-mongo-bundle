@@ -19,7 +19,9 @@ class MongoTransportFactory implements TransportFactoryInterface
     ];
 
     private const DRIVER_OPTIONS_TYPE_MAP = [
-        'root' => 'array', 'document' => 'array', 'array' => 'array',
+        'root' => 'array',
+        'document' => 'array',
+        'array' => 'array',
     ];
 
     public function createTransport(
@@ -40,17 +42,21 @@ class MongoTransportFactory implements TransportFactoryInterface
         }
 
         if (!is_array($uriOptions)) {
-            throw new InvalidArgumentException(sprintf(
-                'Option "uriOptions" has an invalid type. Expected array found %s',
-                gettype($uriOptions)
-            ));
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Option "uriOptions" has an invalid type. Expected array found %s',
+                    gettype($uriOptions)
+                )
+            );
         }
 
         if (!is_array($driverOptions)) {
-            throw new InvalidArgumentException(sprintf(
-                'Option "driverOptions" has an invalid type. Expected array found %s',
-                gettype($driverOptions)
-            ));
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Option "driverOptions" has an invalid type. Expected array found %s',
+                    gettype($driverOptions)
+                )
+            );
         }
 
         $driverOptions['typeMap'] = self::DRIVER_OPTIONS_TYPE_MAP;
