@@ -182,7 +182,7 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
         );
 
         return $envelope->with(
-            new TransportMessageIdStamp($document['_id'])
+            new TransportMessageIdStamp((string)$document['_id'])
         );
     }
 }
