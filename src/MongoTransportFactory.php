@@ -15,7 +15,7 @@ class MongoTransportFactory implements TransportFactoryInterface
     private const DEFAULT_OPTIONS = [
         'collection' => 'messenger_queue',
         'queue' => 'default',
-        'redeliver_timeout' => 3600
+        'redeliver_timeout' => 3600,
     ];
 
     private const DRIVER_OPTIONS_TYPE_MAP = [
@@ -67,7 +67,10 @@ class MongoTransportFactory implements TransportFactoryInterface
         $collection = $client->selectCollection($configuration['database'], $configuration['collection']);
 
         return new MongoTransport(
-            $collection, $serializer, uniqid('consumer_', true), $configuration
+            $collection,
+            $serializer,
+            uniqid('consumer_', true),
+            $configuration
         );
     }
 

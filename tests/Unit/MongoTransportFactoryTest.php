@@ -36,7 +36,7 @@ class MongoTransportFactoryTest extends TestCase
         $factory->createTransport(
             'mongodb://127.0.0.1:27017',
             [
-                'uriOptions' => false
+                'uriOptions' => false,
             ],
             $this->createMock(SerializerInterface::class)
         );
@@ -54,7 +54,7 @@ class MongoTransportFactoryTest extends TestCase
         $factory->createTransport(
             'mongodb://127.0.0.1:27017',
             [
-                'driverOptions' => 'invalid'
+                'driverOptions' => 'invalid',
             ],
             $this->createMock(SerializerInterface::class)
         );

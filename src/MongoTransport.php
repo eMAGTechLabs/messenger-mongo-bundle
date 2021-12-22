@@ -76,7 +76,7 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
                     'available_at' => 1,
                 ],
                 'writeConcern' => new WriteConcern(WriteConcern::MAJORITY),
-                'returnDocument' => FindOneAndUpdate::RETURN_DOCUMENT_AFTER
+                'returnDocument' => FindOneAndUpdate::RETURN_DOCUMENT_AFTER,
             ]
         );
 
@@ -177,7 +177,7 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
         $envelope = $this->serializer->decode(
             [
                 'body' => $document['body'],
-                'headers' => $document['headers']
+                'headers' => $document['headers'],
             ]
         );
 

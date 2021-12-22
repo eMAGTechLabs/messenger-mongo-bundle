@@ -34,7 +34,7 @@ class MessengerMongoExtensionTest extends TestCase
         $containerBuilder = new ContainerBuilder();
         $containerBuilder->registerExtension(new MessengerMongoExtension());
         $containerBuilder->loadFromExtension('messenger_mongo');
-        $containerBuilder->addCompilerPass(new class implements CompilerPassInterface {
+        $containerBuilder->addCompilerPass(new class () implements CompilerPassInterface {
             public function process(ContainerBuilder $container): void
             {
                 $container->findDefinition(MongoTransportFactory::class)

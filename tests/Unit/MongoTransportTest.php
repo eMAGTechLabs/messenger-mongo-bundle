@@ -36,7 +36,7 @@ class MongoTransportTest extends TestCase
             'consumer_id',
             [
                 'redeliver_timeout' => 3600,
-                'queue' => 'default'
+                'queue' => 'default',
             ]
         );
 
@@ -74,7 +74,7 @@ class MongoTransportTest extends TestCase
             'consumer_id2',
             [
                 'redeliver_timeout' => 3600,
-                'queue' => 'default'
+                'queue' => 'default',
             ]
         );
 
@@ -98,7 +98,7 @@ class MongoTransportTest extends TestCase
             'consumer_id2',
             [
                 'redeliver_timeout' => 3600,
-                'queue' => 'default'
+                'queue' => 'default',
             ]
         );
 
@@ -194,7 +194,7 @@ class MongoTransportTest extends TestCase
             $this->createSerializer(),
             'consumer_id',
             [
-                'queue' => 'default'
+                'queue' => 'default',
             ]
         );
         $envelope = $transport->send(
@@ -248,7 +248,7 @@ class MongoTransportTest extends TestCase
 
     private function createCollection(array $documents = []): Collection
     {
-        return new class extends Collection {
+        return new class () extends Collection {
             public $documents = [];
 
             public function __construct()
@@ -268,7 +268,7 @@ class MongoTransportTest extends TestCase
             '_id' => new ObjectId(),
             'body' => '{"text": "Hello"}',
             'headers' => [
-                'type' => HelloMessage::class
+                'type' => HelloMessage::class,
             ],
             'consumer_id' => 'consumer_id',
         ];
