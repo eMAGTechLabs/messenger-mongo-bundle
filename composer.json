@@ -28,8 +28,8 @@
         "symfony/var-dumper": "^5.0|^6.0",
         "symfony/framework-bundle": "^5.0|^6.0",
         "phpunit/phpunit": "^9.5",
-        "infection/infection": "^0.23.0",
-        "phpstan/phpstan": "^0.12.91"
+        "infection/infection": "^0.25.0",
+        "phpstan/phpstan": "^1.2"
     },
     "autoload": {
         "psr-4": {
