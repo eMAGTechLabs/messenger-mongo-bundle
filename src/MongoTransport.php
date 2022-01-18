@@ -104,7 +104,7 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
         }
 
         $this->collection->deleteOne([
-            '_id' => $transportMessageIdStamp->getId(),
+            '_id' => new ObjectId($transportMessageIdStamp->getId()),
         ]);
     }
 
@@ -177,7 +177,7 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
         $envelope = $this->serializer->decode(
             [
                 'body' => $document['body'],
-                'headers' => $document['headers']
+                'headers' => json_decode($document['headers'], true) ?: $document['headers']
             ]
         );
 
