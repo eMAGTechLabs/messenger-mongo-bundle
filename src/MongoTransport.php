@@ -103,8 +103,14 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
             throw new LogicException(sprintf('No "%s" found on the Envelope.', TransportMessageIdStamp::class));
         }
 
+        $id = $transportMessageIdStamp->getId();
+        
+        if (is_string($id)) {
+            $id = new ObjectId($id);
+        }
+
         $this->collection->deleteOne([
-            '_id' => new ObjectId($transportMessageIdStamp->getId()),
+            '_id' => $id,
         ]);
     }
 
@@ -174,10 +180,16 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
      */
     private function createEnvelopeFromDocument(array $document): Envelope
     {
+        $headers = $document['headers'];
+
+        if (is_string($headers)) {
+            $headers = json_decode($headers, true) ?: $headers;
+        }
+
         $envelope = $this->serializer->decode(
             [
                 'body' => $document['body'],
-                'headers' => json_decode($document['headers'], true) ?: $document['headers']
+                'headers' => $headers
             ]
         );
 
