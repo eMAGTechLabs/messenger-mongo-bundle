@@ -166,7 +166,7 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
 
     public function find($id): ?Envelope
     {
-        $document = $this->collection->findOne(['_id' => new ObjectId($id)]);
+        $document = $this->collection->findOne(['_id' => is_string($id) ? new ObjectId($id) : $id]);
 
         if (null === $document) {
             return null;
