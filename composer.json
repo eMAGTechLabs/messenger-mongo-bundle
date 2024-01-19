@@ -1,5 +1,5 @@
 {
-    "name": "hakanbolat/messenger-mongo-bundle",
+    "name": "emag-tech-labs/messenger-mongo-bundle",
     "description": "A Mongo transport for the Symfony Messenger component",
     "type": "symfony-bundle",
     "license": "MIT",
