@@ -20,7 +20,7 @@
         "php": "^8.1",
         "ext-json": "*",
         "symfony/messenger": "^5.0 || ^6.0 || ^7.0",
-        "mongodb/mongodb": "^1.8"
+        "mongodb/mongodb": "^1.12"
     },
     "require-dev": {
         "symfony/serializer": "^5.0 || ^6.0 || ^7.0",
@@ -39,6 +39,11 @@
     "autoload-dev": {
         "psr-4": {
             "EmagTechLabs\\MessengerMongoBundle\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "infection/extension-installer": true
         }
     }
 }
