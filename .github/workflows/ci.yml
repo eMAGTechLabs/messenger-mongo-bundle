@@ -16,7 +16,7 @@ jobs:
                     coverage: pcov
                     php-version: ${{ matrix.php-version }}
                     tools: pecl, composer:v2
-                    extensions: mongodb-1.12.0
+                    extensions: mongodb-1.13
             -   name: Composer config
                 run: composer config --no-plugins allow-plugins.infection/extension-installer true
             -   name: Composer install
