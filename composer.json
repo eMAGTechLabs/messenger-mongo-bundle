@@ -28,7 +28,7 @@
         "symfony/var-dumper": "^5.0 || ^6.0 || ^7.0",
         "symfony/framework-bundle": "^5.0 || ^6.0 || ^7.0",
         "phpunit/phpunit": "^10.5",
-        "infection/infection": "^0.27",
+        "infection/infection": "^0.27.9",
         "phpstan/phpstan": "^1.10"
     },
     "autoload": {
