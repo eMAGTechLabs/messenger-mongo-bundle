@@ -19,14 +19,14 @@
     "require": {
         "php": "^7.4 || ^8.0",
         "ext-json": "*",
-        "symfony/messenger": "^5.0 || ^6.0",
+        "symfony/messenger": "^5.0 || ^6.0 || ^7.0",
         "mongodb/mongodb": "^1.8"
     },
     "require-dev": {
-        "symfony/serializer": "^5.0 || ^6.0",
-        "symfony/property-access": "^5.0 || ^6.0",
-        "symfony/var-dumper": "^5.0 || ^6.0",
-        "symfony/framework-bundle": "^5.0 || ^6.0",
+        "symfony/serializer": "^5.0 || ^6.0 || ^7.0",
+        "symfony/property-access": "^5.0 || ^6.0 || ^7.0",
+        "symfony/var-dumper": "^5.0 || ^6.0 || ^7.0",
+        "symfony/framework-bundle": "^5.0 || ^6.0 || ^7.0",
         "phpunit/phpunit": "^9.5",
         "infection/infection": "^0.25.0",
         "phpstan/phpstan": "^1.2"
