@@ -36,7 +36,8 @@ class MongoTransportTest extends TestCase
             'consumer_id',
             [
                 'redeliver_timeout' => 3600,
-                'queue' => 'default'
+                'queue' => 'default',
+                'enable_writeConcern_majority' => true
             ]
         );
 
@@ -74,7 +75,8 @@ class MongoTransportTest extends TestCase
             'consumer_id2',
             [
                 'redeliver_timeout' => 3600,
-                'queue' => 'default'
+                'queue' => 'default',
+                'enable_writeConcern_majority' => true
             ]
         );
 
@@ -98,7 +100,8 @@ class MongoTransportTest extends TestCase
             'consumer_id2',
             [
                 'redeliver_timeout' => 3600,
-                'queue' => 'default'
+                'queue' => 'default',
+                'enable_writeConcern_majority' => true
             ]
         );
 

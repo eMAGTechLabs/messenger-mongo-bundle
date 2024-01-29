@@ -48,6 +48,17 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
             $this->options['redeliver_timeout']
         ));
 
+        $options = [
+            'sort' => [
+                'available_at' => 1,
+            ],
+            'returnDocument' => FindOneAndUpdate::RETURN_DOCUMENT_AFTER
+        ];
+
+        if ($this->options['enable_writeConcern_majority']) {
+            $options['writeConcern'] = new WriteConcern(WriteConcern::MAJORITY);
+        }
+
         $document = $this->collection->findOneAndUpdate(
             [
                 '$or' => [
@@ -71,13 +82,7 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
                     'delivered_at' => new UTCDateTime($now),
                 ],
             ],
-            [
-                'sort' => [
-                    'available_at' => 1,
-                ],
-                'writeConcern' => new WriteConcern(WriteConcern::MAJORITY),
-                'returnDocument' => FindOneAndUpdate::RETURN_DOCUMENT_AFTER
-            ]
+            $options
         );
 
         if (!is_array($document)) {
