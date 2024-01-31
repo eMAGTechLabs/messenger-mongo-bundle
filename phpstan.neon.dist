@@ -6,4 +6,4 @@ parameters:
         - tests
     ignoreErrors:
         - '#Access to an undefined property MongoDB\\Collection::\$documents.#'
-        - '#Return type \(void\) of method class@anonymous\/tests\/Unit\/MongoTransportTest.php:251::insertOne\(\) should be compatible with return type \(MongoDB\\InsertOneResult\) of method MongoDB\\Collection::insertOne\(\)#'
+        - '#Return type \(void\) of method class@anonymous\/tests\/Unit\/MongoTransportTest.php:254::insertOne\(\) should be compatible with return type \(MongoDB\\InsertOneResult\) of method MongoDB\\Collection::insertOne\(\)#'

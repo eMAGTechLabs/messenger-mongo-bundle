@@ -15,7 +15,8 @@ class MongoTransportFactory implements TransportFactoryInterface
     private const DEFAULT_OPTIONS = [
         'collection' => 'messenger_queue',
         'queue' => 'default',
-        'redeliver_timeout' => 3600
+        'redeliver_timeout' => 3600,
+        'enable_writeConcern_majority' => true
     ];
 
     private const DRIVER_OPTIONS_TYPE_MAP = [

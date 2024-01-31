@@ -25,6 +25,7 @@ framework:
                     collection: hello_messages # default is "messenger_queue"
                     queue: hello_queue # default is "default"
                     redeliver_timeout: 4800 # default is 3600
+                    enable_writeConcern_majority: false # default is true
 ```
 The features described [here](https://symfony.com/doc/current/messenger.html#saving-retrying-failed-messages) can be used also, therefore the following commands are available in order to manually debug the failed messages:
 ```bash
