@@ -6,15 +6,14 @@ namespace EmagTechLabs\MessengerMongoBundle\Tests\Unit;
 
 use EmagTechLabs\MessengerMongoBundle\MongoTransport;
 use EmagTechLabs\MessengerMongoBundle\MongoTransportFactory;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Messenger\Exception\InvalidArgumentException;
 use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
 use PHPUnit\Framework\TestCase;
 
 class MongoTransportFactoryTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function itShouldSupportOnlyMongoSchema(): void
     {
         $factory = new MongoTransportFactory();
@@ -24,9 +23,7 @@ class MongoTransportFactoryTest extends TestCase
         $this->assertFalse($factory->supports('doctrine://', []));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itShouldFailIfUriOptionsHasInvalidType(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -42,9 +39,7 @@ class MongoTransportFactoryTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itShouldFailIfDriverOptionsHasInvalidType(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -60,9 +55,7 @@ class MongoTransportFactoryTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itShouldCreateTransport(): void
     {
         $factory = new MongoTransportFactory();

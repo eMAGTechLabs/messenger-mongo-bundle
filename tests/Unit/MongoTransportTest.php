@@ -8,7 +8,8 @@ use EmagTechLabs\MessengerMongoBundle\MongoTransport;
 use EmagTechLabs\MessengerMongoBundle\Tests\Unit\Fixtures\HelloMessage;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
-use MongoDB\Driver\CursorInterface;
+use MongoDB\InsertOneResult;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
@@ -18,9 +19,25 @@ use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
 
 class MongoTransportTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
+    public function itShouldCountTheMessages(): void
+    {
+        $collection = $this->createMock(Collection::class);
+        $collection->method('countDocuments')
+            ->willReturn(3);
+
+        $transport = new MongoTransport(
+            $collection,
+            $this->createSerializer(),
+            'consumer_id',
+            []
+        );
+
+        $count = $transport->getMessageCount();
+
+        $this->assertSame(3, $count);
+    }
+    #[Test]
     public function itShouldFetchAndDecodeADocumentFromDb(): void
     {
         $serializer = $this->createSerializer();
@@ -57,9 +74,7 @@ class MongoTransportTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itShouldNothingIfConsumerIdNotMatching(): void
     {
         $serializer = $this->createSerializer();
@@ -83,9 +98,7 @@ class MongoTransportTest extends TestCase
         $this->assertCount(0, $transport->get());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itShouldNothingIfDocumentIsNotArray(): void
     {
         $serializer = $this->createSerializer();
@@ -108,9 +121,7 @@ class MongoTransportTest extends TestCase
         $this->assertCount(0, $transport->get());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itShouldListAllMessages(): void
     {
         $serializer = $this->createSerializer();
@@ -137,9 +148,7 @@ class MongoTransportTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itShouldFindAMessageById(): void
     {
         $serializer = $this->createSerializer();
@@ -163,9 +172,7 @@ class MongoTransportTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itShouldReturnNothingIfIdCouldNotBeFound(): void
     {
         $serializer = $this->createSerializer();
@@ -185,9 +192,7 @@ class MongoTransportTest extends TestCase
         ));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itShouldSendAMessage(): void
     {
         $collection = $this->createCollection();
@@ -225,9 +230,7 @@ class MongoTransportTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itShouldDeleteTheDocumentOnAckOrReject(): void
     {
         $documentId = new ObjectId();
@@ -252,15 +255,21 @@ class MongoTransportTest extends TestCase
     private function createCollection(array $documents = []): Collection
     {
         return new class extends Collection {
-            public $documents = [];
+            public array $documents = [];
 
             public function __construct()
             {
             }
 
-            public function insertOne($a, array $options = []): void
+            public function insertOne($document, array $options = []): InsertOneResult
             {
-                $this->documents[] = $a;
+                $this->documents[] = $document;
+
+                return new class extends InsertOneResult {
+                    public function __construct()
+                    {
+                    }
+                };
             }
         };
     }
