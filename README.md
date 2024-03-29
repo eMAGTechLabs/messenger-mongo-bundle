@@ -30,7 +30,7 @@ framework:
 The features described [here](https://symfony.com/doc/current/messenger.html#saving-retrying-failed-messages) can be used also, therefore the following commands are available in order to manually debug the failed messages:
 ```bash
 # see all messages in the failure transport
-$ bin/console messenger:failed:show
+$ php bin/console messenger:failed:show
 
 # see details about a specific failed message
 $ php bin/console messenger:failed:show 20 -vv
@@ -42,8 +42,10 @@ $ php bin/console messenger:failed:retry -vv
 $ php bin/console messenger:failed:retry 20 30 --force
 
 # remove a message without retrying it
-$ bin/console messenger:failed:remove
+$ php bin/console messenger:failed:remove
+
+# displays the number of queued messages in all transports
+$ php bin/console messenger:stats
 ``` 
 ### Submitting bugs and feature requests
 If you found a nasty bug or want to propose a new feature, you're welcome to open an issue or create a pull request [here](https://github.com/eMAGTechLabs/messenger-mongo-bundle/issues). 
-

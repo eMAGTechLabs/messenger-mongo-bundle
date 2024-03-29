@@ -16,12 +16,13 @@ use Symfony\Component\Messenger\Exception\MessageDecodingFailedException;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Symfony\Component\Messenger\Stamp\TransportMessageIdStamp;
 use Symfony\Component\Messenger\Transport\Receiver\ListableReceiverInterface;
+use Symfony\Component\Messenger\Transport\Receiver\MessageCountAwareInterface;
 use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
 use Symfony\Component\Messenger\Transport\TransportInterface;
 
 use function is_array;
 
-final class MongoTransport implements TransportInterface, ListableReceiverInterface
+final class MongoTransport implements TransportInterface, ListableReceiverInterface, MessageCountAwareInterface
 {
     private Collection $collection;
     private SerializerInterface $serializer;
@@ -201,5 +202,10 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
         return $envelope->with(
             new TransportMessageIdStamp((string)$document['_id'])
         );
+    }
+
+    public function getMessageCount(): int
+    {
+        return $this->collection->countDocuments();
     }
 }
