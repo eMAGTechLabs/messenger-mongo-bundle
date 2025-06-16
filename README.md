@@ -46,6 +46,13 @@ $ php bin/console messenger:failed:remove
 
 # displays the number of queued messages in all transports
 $ php bin/console messenger:stats
-``` 
+```
+#### Defining an index for the messages collection
+The MongoDB collections where messages are stored (default `messenger_queue`) should have the following index defined:
+```js
+{ available_at: 1 }
+```
+
+Without the index, the performance may degrade significantly with a large number of items (100k+) in the queue.
 ### Submitting bugs and feature requests
 If you found a nasty bug or want to propose a new feature, you're welcome to open an issue or create a pull request [here](https://github.com/eMAGTechLabs/messenger-mongo-bundle/issues). 
