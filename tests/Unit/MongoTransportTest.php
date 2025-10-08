@@ -6,11 +6,15 @@ namespace EmagTechLabs\MessengerMongoBundle\Tests\Unit;
 
 use EmagTechLabs\MessengerMongoBundle\MongoTransport;
 use EmagTechLabs\MessengerMongoBundle\Tests\Unit\Fixtures\HelloMessage;
+use MongoDB\BSON\Int64;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
+use MongoDB\Driver\CursorInterface;
+use MongoDB\Driver\Server;
 use MongoDB\InsertOneResult;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Symfony\Component\Messenger\Stamp\TransportMessageIdStamp;
@@ -128,11 +132,11 @@ class MongoTransportTest extends TestCase
 
         $collection = $this->createMock(Collection::class);
         $collection->method('find')
-            ->willReturn([
+            ->willReturn($this->createCursor([
                 $this->createDocument(),
                 $this->createDocument(),
                 $this->createDocument(),
-            ]);
+            ]));
 
         $transport = new MongoTransport(
             $collection,
@@ -195,7 +199,24 @@ class MongoTransportTest extends TestCase
     #[Test]
     public function itShouldSendAMessage(): void
     {
-        $collection = $this->createCollection();
+        $collection = new class extends Collection {
+            public array $documents = [];
+
+            public function __construct()
+            {
+            }
+
+            public function insertOne($document, array $options = []): InsertOneResult
+            {
+                $this->documents[] = $document;
+
+                return new class extends InsertOneResult {
+                    public function __construct()
+                    {
+                    }
+                };
+            }
+        };
 
         $transport = new MongoTransport(
             $collection,
@@ -252,28 +273,6 @@ class MongoTransportTest extends TestCase
         $transport->reject($envelope);
     }
 
-    private function createCollection(array $documents = []): Collection
-    {
-        return new class extends Collection {
-            public array $documents = [];
-
-            public function __construct()
-            {
-            }
-
-            public function insertOne($document, array $options = []): InsertOneResult
-            {
-                $this->documents[] = $document;
-
-                return new class extends InsertOneResult {
-                    public function __construct()
-                    {
-                    }
-                };
-            }
-        };
-    }
-
     private function createDocument(): array
     {
         return [
@@ -289,5 +288,68 @@ class MongoTransportTest extends TestCase
     private function createSerializer(): SerializerInterface
     {
         return new Serializer();
+    }
+
+    private function createCursor(array $documents): CursorInterface
+    {
+        return new class($documents) implements CursorInterface
+        {
+            private array $data;
+            private int $position = 0;
+
+            public function __construct(array $data)
+            {
+                $this->data = array_values($data);
+            }
+
+            public function current(): array|null|object
+            {
+                return $this->data[$this->position];
+            }
+
+            public function key(): int
+            {
+                return $this->position;
+            }
+
+            public function next(): void
+            {
+                $this->position++;
+            }
+
+            public function rewind(): void
+            {
+                $this->position = 0;
+            }
+
+            public function valid(): bool
+            {
+                return array_key_exists($this->position, $this->data);
+            }
+
+            public function toArray(): array
+            {
+                return $this->data;
+            }
+
+            public function isDead(): bool
+            {
+                return false;
+            }
+
+            public function setTypeMap(array $typemap): void
+            {
+            }
+
+            public function getId(): Int64
+            {
+                throw new RuntimeException('Not implemented in test cursor.');
+            }
+
+            public function getServer(): Server
+            {
+                throw new RuntimeException('Not implemented in test cursor.');
+            }
+        };
     }
 }

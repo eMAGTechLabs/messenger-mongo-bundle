@@ -1,8 +1,5 @@
 parameters:
     level: 5
-    checkMissingIterableValueType: false
     paths:
         - src
         - tests
-    ignoreErrors:
-        - '#Access to an undefined property MongoDB\\Collection::\$documents.#'

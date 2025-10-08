@@ -9,18 +9,18 @@ jobs:
                 php-version: ['8.1', '8.2', '8.3', '8.4']
         name: PHP ${{ matrix.php-version }}
         steps:
-            -   uses: actions/checkout@v2
+            -   uses: actions/checkout@v4
             -   name: Install PHP
                 uses: shivammathur/setup-php@v2
                 with:
                     coverage: pcov
                     php-version: ${{ matrix.php-version }}
                     tools: pecl, composer:v2
-                    extensions: mongodb-1.13
+                    extensions: mongodb
             -   name: Composer config
                 run: composer config --no-plugins allow-plugins.infection/extension-installer true
             -   name: Composer install
-                run: composer install --no-interaction --no-progress --no-suggest
+                run: composer install --no-interaction --no-progress
             -   name: PHPUnit
                 run: ./vendor/bin/phpunit --coverage-clover coverage.xml
             -   name: PHPStan
@@ -30,7 +30,7 @@ jobs:
                 env:
                     INFECTION_BADGE_API_KEY: ${{ secrets.INFECTION_BADGE_API_KEY }}
             -   name: Codecov
-                uses: codecov/codecov-action@v1
+                uses: codecov/codecov-action@v4
                 with:
                     token: ${{ secrets.CODECOV_TOKEN }}
-                    file: ./coverage.xml
+                    files: ./coverage.xml

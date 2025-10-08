@@ -1,4 +1,4 @@
-FROM php:8.3-alpine
+FROM php:8.4-alpine
 
 WORKDIR /var/www/html
 
@@ -7,7 +7,7 @@ RUN apk update \
   && apk add --no-cache git zip make autoconf g++ openssl-dev linux-headers \
   && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS
 
-RUN pecl -q install mongodb-1.17.2  \
+RUN pecl -q install mongodb-2.1.4  \
   && docker-php-ext-enable mongodb \
   && pecl -q install xdebug  \
   && docker-php-ext-enable xdebug
