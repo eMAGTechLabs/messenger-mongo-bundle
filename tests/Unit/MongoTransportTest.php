@@ -48,7 +48,34 @@ class MongoTransportTest extends TestCase
         $document = $this->createDocument();
 
         $collection = $this->createMock(Collection::class);
-        $collection->method('findOneAndUpdate')
+        $collection->expects($this->once())
+            ->method('findOneAndUpdate')
+            ->with(
+                $this->callback(function (array $filter) {
+                    $this->assertArrayHasKey('$or', $filter);
+                    $this->assertCount(2, $filter['$or']);
+                    $this->assertEquals(['delivered_at' => null], $filter['$or'][0]);
+                    $this->assertArrayHasKey('delivered_at', $filter['$or'][1]);
+                    $this->assertArrayHasKey('$lt', $filter['$or'][1]['delivered_at']);
+                    $this->assertInstanceOf(\MongoDB\BSON\UTCDateTime::class, $filter['$or'][1]['delivered_at']['$lt']);
+
+                    $this->assertEquals('default', $filter['queue_name']);
+                    $this->assertArrayHasKey('$lte', $filter['available_at']);
+                    return true;
+                }),
+                $this->callback(function (array $update) {
+                    $this->assertArrayHasKey('$set', $update);
+                    $this->assertEquals('consumer_id', $update['$set']['consumer_id']);
+                    $this->assertArrayHasKey('delivered_at', $update['$set']);
+                    return true;
+                }),
+                $this->callback(function (array $options) {
+                    $this->assertEquals(['available_at' => 1], $options['sort']);
+                    $this->assertEquals(\MongoDB\Operation\FindOneAndUpdate::RETURN_DOCUMENT_AFTER, $options['returnDocument']);
+                    $this->assertInstanceOf(\MongoDB\Driver\WriteConcern::class, $options['writeConcern']);
+                    return true;
+                })
+            )
             ->willReturn($document);
 
         $transport = new MongoTransport(
@@ -197,7 +224,7 @@ class MongoTransportTest extends TestCase
     }
 
     #[Test]
-    public function itShouldSendAMessage(): void
+    public function itShouldSendAMessageWithDelay(): void
     {
         $collection = new class extends Collection {
             public array $documents = [];
@@ -222,15 +249,15 @@ class MongoTransportTest extends TestCase
             $collection,
             $this->createSerializer(),
             'consumer_id',
-            [
-                'queue' => 'default'
-            ]
+            ['queue' => 'default']
         );
         $envelope = $transport->send(
             (new Envelope(new HelloMessage('hello')))
                 ->with(new DelayStamp(4000))
         );
 
+        $this->assertArrayHasKey('_id', $collection->documents[0]);
+        $this->assertInstanceOf(ObjectId::class, $collection->documents[0]['_id']);
         $this->assertSame('{"text":"hello"}', $collection->documents[0]['body']);
         $this->assertEquals(
             [
@@ -242,12 +269,51 @@ class MongoTransportTest extends TestCase
         );
         $this->assertSame('default', $collection->documents[0]['queue_name']);
         $this->assertInstanceOf(TransportMessageIdStamp::class, $envelope->last(TransportMessageIdStamp::class));
-        $this->assertSame(
+        $this->assertEqualsWithDelta(
             4,
             $collection->documents[0]['available_at']
                 ->toDateTime()
-                ->diff($collection->documents[0]['created_at']->toDateTime())
-                ->s
+                ->getTimestamp() - $collection->documents[0]['created_at']->toDateTime()->getTimestamp(),
+            1
+        );
+    }
+
+    #[Test]
+    public function itShouldSendAMessageWithoutDelay(): void
+    {
+        $collection = new class extends Collection {
+            public array $documents = [];
+
+            public function __construct()
+            {
+            }
+
+            public function insertOne($document, array $options = []): InsertOneResult
+            {
+                $this->documents[] = $document;
+
+                return new class extends InsertOneResult {
+                    public function __construct()
+                    {
+                    }
+                };
+            }
+        };
+
+        $transport = new MongoTransport(
+            $collection,
+            $this->createSerializer(),
+            'consumer_id',
+            ['queue' => 'default']
+        );
+        $transport->send(new Envelope(new HelloMessage('hello')));
+
+        $this->assertEqualsWithDelta(
+            0,
+            $collection->documents[0]['available_at']
+                ->toDateTime()
+                ->getTimestamp() - $collection->documents[0]['created_at']->toDateTime()->getTimestamp(),
+            1
         );
     }
 
