@@ -7,7 +7,7 @@ namespace EmagTechLabs\MessengerMongoBundle\DependencyInjection;
 use EmagTechLabs\MessengerMongoBundle\MongoTransportFactory;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Symfony\Component\DependencyInjection\Extension\Extension;
 
 class MessengerMongoExtension extends Extension
 {

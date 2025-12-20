@@ -16,29 +16,18 @@ use Symfony\Component\Messenger\Exception\MessageDecodingFailedException;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Symfony\Component\Messenger\Stamp\TransportMessageIdStamp;
 use Symfony\Component\Messenger\Transport\Receiver\ListableReceiverInterface;
+use Symfony\Component\Messenger\Transport\Receiver\MessageCountAwareInterface;
 use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
 use Symfony\Component\Messenger\Transport\TransportInterface;
 
 use function is_array;
 
-final class MongoTransport implements TransportInterface, ListableReceiverInterface
+final class MongoTransport implements TransportInterface, ListableReceiverInterface, MessageCountAwareInterface
 {
-    /**
-     * @var Collection
-     */
-    private $collection;
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-    /**
-     * @var array
-     */
-    private $options;
-    /**
-     * @var string
-     */
-    private $consumerId;
+    private Collection $collection;
+    private SerializerInterface $serializer;
+    private array $options;
+    private string $consumerId;
 
     public function __construct(
         Collection $collection,
@@ -59,6 +48,17 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
             '-%d seconds',
             $this->options['redeliver_timeout']
         ));
+
+        $options = [
+            'sort' => [
+                'available_at' => 1,
+            ],
+            'returnDocument' => FindOneAndUpdate::RETURN_DOCUMENT_AFTER
+        ];
+
+        if ($this->options['enable_writeConcern_majority']) {
+            $options['writeConcern'] = new WriteConcern(WriteConcern::MAJORITY);
+        }
 
         $document = $this->collection->findOneAndUpdate(
             [
@@ -83,13 +83,7 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
                     'delivered_at' => new UTCDateTime($now),
                 ],
             ],
-            [
-                'sort' => [
-                    'available_at' => 1,
-                ],
-                'writeConcern' => new WriteConcern(WriteConcern::MAJORITY),
-                'returnDocument' => FindOneAndUpdate::RETURN_DOCUMENT_AFTER
-            ]
+            $options
         );
 
         if (!is_array($document)) {
@@ -115,8 +109,14 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
             throw new LogicException(sprintf('No "%s" found on the Envelope.', TransportMessageIdStamp::class));
         }
 
+        $id = $transportMessageIdStamp->getId();
+        
+        if (is_string($id)) {
+            $id = new ObjectId($id);
+        }
+
         $this->collection->deleteOne([
-            '_id' => $transportMessageIdStamp->getId(),
+            '_id' => $id,
         ]);
     }
 
@@ -172,7 +172,7 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
 
     public function find($id): ?Envelope
     {
-        $document = $this->collection->findOne(['_id' => new ObjectId($id)]);
+        $document = $this->collection->findOne(['_id' => is_string($id) ? new ObjectId($id) : $id]);
 
         if (null === $document) {
             return null;
@@ -186,15 +186,26 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
      */
     private function createEnvelopeFromDocument(array $document): Envelope
     {
+        $headers = $document['headers'];
+
+        if (is_string($headers)) {
+            $headers = json_decode($headers, true) ?: $headers;
+        }
+
         $envelope = $this->serializer->decode(
             [
                 'body' => $document['body'],
-                'headers' => $document['headers']
+                'headers' => $headers
             ]
         );
 
         return $envelope->with(
-            new TransportMessageIdStamp($document['_id'])
+            new TransportMessageIdStamp((string)$document['_id'])
         );
+    }
+
+    public function getMessageCount(): int
+    {
+        return $this->collection->countDocuments();
     }
 }

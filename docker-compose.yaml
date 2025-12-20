@@ -8,7 +8,7 @@ services:
             - ./:/var/www/html
     mongo:
         restart: unless-stopped
-        image: mongo:3.6
+        image: mongo:6
         ports:
             - 27017:27017
         environment:
