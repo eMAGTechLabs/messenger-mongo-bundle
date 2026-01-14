@@ -102,7 +102,6 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
      */
     private function removeMessage(Envelope $envelope): void
     {
-        /** @var TransportMessageIdStamp $transportMessageIdStamp */
         $transportMessageIdStamp = $envelope->last(TransportMessageIdStamp::class);
 
         if (!$transportMessageIdStamp instanceof TransportMessageIdStamp) {
@@ -161,7 +160,7 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
         return $envelope->with(new TransportMessageIdStamp($objectId));
     }
 
-    public function all(int $limit = null): iterable
+    public function all(?int $limit = null): iterable
     {
         $documents = $this->collection->find([], ['limit' => $limit]);
 
@@ -170,7 +169,7 @@ final class MongoTransport implements TransportInterface, ListableReceiverInterf
         }
     }
 
-    public function find($id): ?Envelope
+    public function find(mixed $id): ?Envelope
     {
         $document = $this->collection->findOne(['_id' => is_string($id) ? new ObjectId($id) : $id]);
 
